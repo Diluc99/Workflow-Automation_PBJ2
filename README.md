@@ -1,78 +1,303 @@
-# Lab 1 — End-to-End Loan Approval Automation (Camunda 8)
+# Camunda 8 Practical Assignment — Labs 1–3
 
-**Submitted by:** Shivam Kumar Jha  
-**Register Number:** RA2411056010039
+**Course/Assignment:** PBJ-2 Practical Assignment  
+**Project:** Camunda 8 — End-to-End Workflow Automation  
+**Student Name:** Shivam Kumar Jha  
+**Register Number:** RA2411056010039  
 
-A complete educational implementation for the Lab 1 requirements: BPMN orchestration, DMN decisioning, a Java/Spring Boot external worker, a REST Connector, a synthetic credit-assessment API, process variables, a Tasklist manual-review task, Operate monitoring, and incident-recovery scenarios.
+> This README is a consolidated guide for Labs 1, 2, and 3. Replace the marked implementation notes with the details and test results from your own Camunda 8 environment. Add screenshots only after capturing them from your running implementation.
 
-> **Important:** This is a synthetic teaching project. It is not a real lender, credit bureau, or production underwriting system. Use only synthetic data.
+---
 
-## Quick start
+## 1. Assignment Overview
 
-1. Read [`docs/DEPLOYMENT-GUIDE.md`](docs/DEPLOYMENT-GUIDE.md) before starting. The project targets Camunda 8.10 SaaS, Java 21, and the Camunda Spring Boot 3 Starter 8.10.3.
-2. Deploy `bpmn/loan-approval.bpmn`, `dmn/loan-eligibility.dmn`, and `forms/loan-review-form.form` **together** to the same cluster.
-3. Create the Identity group with ID `loan-reviewers` and add your Tasklist user.
-4. Copy `.env.example` to `.env` and fill in the four Camunda credentials (or export them in your shell). `.env` is Git-ignored.
-5. Run `mvn clean test`, then `./scripts/run-app.sh` (the script loads `.env` automatically when present).
-6. Check `http://localhost:8081/api/health`.
-7. Start an HTTPS tunnel to port 8081 and set the resulting URL as process variable `creditApiUrl`.
-8. Start a process instance using `scripts/start-instance.sh test-data/approved.json` after setting the REST base URL and OAuth access token, or use the cluster UI.
+The assignment requires three separate workflow implementations using Camunda 8:
 
-## Visual documentation
+1. **Lab 1 — Loan Approval Automation**
+2. **Lab 2 — E-Commerce Order Processing and Fulfilment**
+3. **Lab 3 — Hospital Appointment and Patient Triage Management**
 
-The `images/` directory contains original project diagrams for the architecture, workflow stages, DMN decision logic, and test coverage. These are authored explanatory figures—not screenshots of a live Camunda deployment. Runtime evidence must be captured from your own cluster and added to `evidence/`.
+Each lab combines BPMN orchestration, DMN decisions, Java/Spring Boot external job workers, REST integration or mock APIs, process variables, gateways, Tasklist human tasks, and Operate monitoring.
 
-## Project contents
+### Common implementation guidelines
 
-- `bpmn/loan-approval.bpmn` — executable BPMN process with validation, REST Connector, DMN call, gateways, and a Camunda user task.
-- `dmn/loan-eligibility.dmn` — executable FIRST-hit decision table.
-- `forms/loan-review-form.form` — Tasklist form that writes `reviewOutcome` and `reviewNotes`.
-- `src/main/java/` — Spring Boot app, validation worker, synthetic API, DTOs, and services.
-- `src/test/java/` — unit tests for validation and the mock credit-assessment service.
-- `test-data/` — start-variable sets for approval, rejection, manual review, invalid input, API incident, and worker incident.
-- `images/` — architecture, workflow, decision logic, and test coverage figures.
-- `docs/` — architecture, variable dictionary, REST Connector configuration, test plan, deployment guide, implementation-report template, viva notes, and official Camunda documentation links.
-- `scripts/start-instance.sh` — starts a process instance using the Camunda Orchestration Cluster REST API.
+- Model BPMN and DMN using Camunda 8 Modeler / Web Modeler.
+- Use Java with Spring Boot for external job workers.
+- Use REST Connectors or mock REST APIs for service integration.
+- Deploy the required BPMN and DMN models and run multiple workflow instances.
+- Use Tasklist for human tasks and Operate to inspect instances, variables, activity states, failures, and incidents.
+- Use synthetic test data only.
+- Do not include real payment credentials, secrets, or real patient data.
+- Test normal, exceptional, and failure/recovery paths.
+- Report actual outcomes; do not mark a scenario as passed until it has been executed.
 
-## Mock API
+---
 
-`GET /api/health` — health check.
+## 2. Lab 1 — End-to-End Loan Approval Automation
 
-`POST /api/credit-assessments` — synthetic credit assessment. Example request:
+### Objective
 
-```json
-{
-  "applicantId": "APP-1001",
-  "monthlyIncome": 80000,
-  "requestedLoanAmount": 800000,
-  "simulatedCreditScore": 760,
-  "simulateCreditApiFailure": false
-}
+Build an end-to-end loan approval workflow that combines BPMN orchestration, DMN-based decision-making, applicant validation, a credit-assessment service, human review, monitoring, and incident recovery.
+
+### Workflow requirements
+
+1. Accept applicant details, requested loan amount, monthly income, and other relevant application information.
+2. Use a DMN decision table to classify an application as **Approved**, **Rejected**, or **Manual Review** using documented educational rules.
+3. Implement a Java/Spring Boot external job worker to validate applicant information and return validation results as process variables.
+4. Configure a REST Connector to call a simulated or actual credit-assessment API. Use synthetic data.
+5. Pass applicant details, validation results, credit-assessment results, and decision outcomes through process variables.
+6. Use gateways to route the application based on the DMN result and service responses.
+7. Assign a manual-review user task through Tasklist for applications requiring additional review.
+8. Deploy the BPMN and DMN models and test multiple application instances with different inputs.
+9. Use Operate to inspect execution, variables, and activity states. Intentionally cause a worker/service failure, diagnose it, correct the cause, and retry the failed job where supported.
+
+### Minimum test scenarios
+
+| ID | Scenario | Expected route / result | Actual result | Status |
+|---|---|---|---|---|
+| L1-T1 | Application meets approval criteria | Approved | Fill after execution | Not run |
+| L1-T2 | Application fails eligibility criteria | Rejected | Fill after execution | Not run |
+| L1-T3 | Application requires additional review | Manual Review / Tasklist | Fill after execution | Not run |
+| L1-T4 | Credit API error or timeout | Error handling / incident path | Fill after execution | Not run |
+| L1-T5 | Worker failure, correction, and retry | Workflow resumes successfully after correction | Fill after execution | Not run |
+
+### Expected deliverables
+
+- BPMN diagram and deployed process definition.
+- DMN decision table with input/output definitions and sample evaluations.
+- Spring Boot worker source code and configuration instructions.
+- REST request/response example and process-variable list.
+- Test-case table showing inputs, expected route, actual outcome, and status.
+- Tasklist and Operate evidence, including incident investigation and recovery.
+- Brief report describing architecture, implementation, results, and limitations.
+
+### Implementation notes
+
+- **BPMN file:** `TODO`
+- **DMN file:** `TODO`
+- **Worker module / run command:** `TODO`
+- **Credit-assessment mock API:** `TODO`
+- **Process variables:** `TODO`
+- **Deployment details:** `TODO`
+
+---
+
+## 3. Lab 2 — End-to-End E-Commerce Order Processing and Fulfilment
+
+### Objective
+
+Build an order-processing workflow that validates an order, checks inventory, determines delivery priority, processes a simulated payment, and routes the order to fulfilment or review.
+
+### Workflow requirements
+
+1. Receive customer reference, product ID, quantity, delivery preference, and payment details or a payment token for a mock service.
+2. Use a DMN decision table to determine order priority using order value, customer category, and delivery preference. Document the rules and outputs.
+3. Implement a Java/Spring Boot external job worker to validate the order, check simulated inventory, and calculate the order total.
+4. Configure a REST Connector to invoke a payment gateway API or mock payment service. Do not use real payment credentials.
+5. Exchange order details, stock status, order total, payment status, and delivery priority through process variables.
+6. Use exclusive gateways to route orders based on stock availability and payment outcome.
+7. Create a Tasklist user task for manual verification of high-value or exceptional orders.
+8. Deploy BPMN and DMN models and run multiple workflow instances covering normal and exceptional paths.
+9. Monitor instances in Operate. Simulate a payment or inventory-service failure, inspect the incident, fix the underlying cause, and retry the failed job where supported.
+
+### Minimum test scenarios
+
+| ID | Scenario | Expected route / result | Actual result | Status |
+|---|---|---|---|---|
+| L2-T1 | Stock available and payment succeeds | Continue to fulfilment | Fill after execution | Not run |
+| L2-T2 | Insufficient stock | Order does not proceed to fulfilment | Fill after execution | Not run |
+| L2-T3 | Payment declined by mock service | Payment-failure route | Fill after execution | Not run |
+| L2-T4 | High-value order | Manual review in Tasklist | Fill after execution | Not run |
+| L2-T5 | Payment/inventory failure and recovery | Successful retry after corrective action | Fill after execution | Not run |
+
+### Expected deliverables
+
+- BPMN diagram and DMN priority decision table.
+- Spring Boot worker source code and setup instructions.
+- REST Connector configuration and sample API request/response.
+- Process-variable dictionary and gateway-routing explanation.
+- Test-case table with expected and actual results.
+- Tasklist evidence for review tasks and Operate evidence for execution and incident recovery.
+- Brief report documenting implementation and assumptions.
+
+### Implementation notes
+
+- **BPMN file:** `TODO`
+- **DMN file:** `TODO`
+- **Worker module / run command:** `TODO`
+- **Inventory mock API:** `TODO`
+- **Payment mock API:** `TODO`
+- **Process variables:** `TODO`
+- **Deployment details:** `TODO`
+
+---
+
+## 4. Lab 3 — End-to-End Hospital Appointment and Patient Triage Management
+
+### Objective
+
+Develop a hospital appointment workflow that registers a synthetic patient, applies predefined educational triage rules, checks appointment availability, routes cases for staff review, and supports monitoring and recovery.
+
+**Important:** Use synthetic patient data and a mock scheduling API. The triage rules are for the educational workflow only and are not medical advice or a clinical decision system.
+
+### Workflow requirements
+
+1. Collect a synthetic patient reference, appointment preference, symptoms summary, and predefined urgency indicators.
+2. Use a DMN decision table to classify requests as **Routine**, **Priority Review**, or **Urgent Assessment** using predefined educational rules.
+3. Implement a Java/Spring Boot external job worker to validate registration fields and request appointment availability.
+4. Configure a REST Connector to call a mock hospital scheduling API and retrieve available appointment slots.
+5. Exchange patient reference, appointment preference, urgency category, available slots, and booking status through process variables.
+6. Use gateways to route requests based on the simulated triage category and appointment availability.
+7. Create a Tasklist user task for authorised staff review when manual intervention is required or no suitable slot is available.
+8. Deploy and execute multiple workflow instances, then inspect process status, variables, and activity history in Operate.
+9. Simulate a scheduling-service failure, inspect the incident, correct the cause, and retry the failed job where supported.
+
+### Minimum test scenarios
+
+| ID | Scenario | Expected route / result | Actual result | Status |
+|---|---|---|---|---|
+| L3-T1 | Routine request with an available slot | Appointment booking path | Fill after execution | Not run |
+| L3-T2 | Priority request | Staff review path | Fill after execution | Not run |
+| L3-T3 | Urgent-assessment category | Immediate human assessment in simulated workflow | Fill after execution | Not run |
+| L3-T4 | No appointment slots available | Manual intervention / review | Fill after execution | Not run |
+| L3-T5 | Scheduling API failure and recovery | Successful retry after corrective action | Fill after execution | Not run |
+
+### Expected deliverables
+
+- BPMN diagram and DMN decision table with documented educational rules.
+- Spring Boot worker source code and mock scheduling API details.
+- REST Connector configuration and sample request/response.
+- Process-variable dictionary and routing explanation.
+- Test-case table with expected and actual results.
+- Tasklist and Operate evidence for workflow execution and incident recovery.
+- Brief report describing implementation, results, assumptions, and limitations.
+
+### Implementation notes
+
+- **BPMN file:** `TODO`
+- **DMN file:** `TODO`
+- **Worker module / run command:** `TODO`
+- **Mock scheduling API:** `TODO`
+- **Process variables:** `TODO`
+- **Deployment details:** `TODO`
+
+---
+
+## 5. Shared Process-Variable Dictionary Template
+
+Complete this table with the exact variable names and types used in each implemented process.
+
+| Lab | Variable name | Type | Purpose |
+|---|---|---|---|
+| 1 | `TODO` | `TODO` | Applicant / loan application data |
+| 1 | `TODO` | `TODO` | Validation or credit-assessment result |
+| 1 | `TODO` | `TODO` | DMN decision outcome |
+| 2 | `TODO` | `TODO` | Order and customer data |
+| 2 | `TODO` | `TODO` | Inventory / payment status |
+| 2 | `TODO` | `TODO` | Order priority and fulfilment route |
+| 3 | `TODO` | `TODO` | Synthetic patient and appointment preference |
+| 3 | `TODO` | `TODO` | Triage category and available slots |
+| 3 | `TODO` | `TODO` | Booking status / review route |
+
+---
+
+## 6. Deployment and Execution Record
+
+Fill in the details after deploying and running the processes.
+
+| Item | Lab 1 | Lab 2 | Lab 3 |
+|---|---|---|---|
+| Camunda environment / cluster | TODO | TODO | TODO |
+| BPMN process ID | TODO | TODO | TODO |
+| DMN decision ID | TODO | TODO | TODO |
+| Deployment date | TODO | TODO | TODO |
+| Worker started successfully | TODO | TODO | TODO |
+| Mock API reachable | TODO | TODO | TODO |
+| Test instances executed | TODO | TODO | TODO |
+| Incident created and inspected | TODO | TODO | TODO |
+| Retry / recovery verified | TODO | TODO | TODO |
+
+---
+
+## 7. Evidence Checklist
+
+Add evidence captured from your own running Camunda implementation. Do not use placeholder images as proof of execution.
+
+- [ ] BPMN model design for each lab.
+- [ ] DMN model and sample decision result for each lab.
+- [ ] Worker source code and successful startup output.
+- [ ] REST Connector configuration and API request/response.
+- [ ] Successful workflow instance in Operate.
+- [ ] Tasklist user task and its completion, where applicable.
+- [ ] Failure/incident inspection in Operate.
+- [ ] Corrective action and successful retry/recovery.
+- [ ] Test matrix with actual results and status.
+- [ ] Brief implementation report for each lab.
+
+Suggested evidence directory:
+
+```text
+evidence/
+├── lab-1/
+├── lab-2/
+└── lab-3/
 ```
 
-The response contains `creditScore`, `riskBand`, `assessmentReference`, `assessmentStatus`, `provider`, and `assessedAt`.
+---
 
-Set `simulateCreditApiFailure` to `true` to return HTTP 503 for incident demonstration.
+## 8. Suggested Repository Structure
 
-## Worker failure switch
+Adapt this layout to the files actually present in your submission.
 
-Set the process variable `simulateWorkerFailure` to `true` to make the validation worker throw an exception. After retries are exhausted, set it to `false` in Operate and retry the failed job.
-
-## Build and run
-
-Requirements: JDK 21 and Maven 3.9+.
-
-```bash
-mvn clean test
-./scripts/run-app.sh
+```text
+camunda8-practical-assignment/
+├── README.md
+├── lab-1-loan-approval/
+│   ├── bpmn/
+│   ├── dmn/
+│   ├── worker/
+│   ├── api-examples/
+│   └── report/
+├── lab-2-ecommerce-fulfilment/
+│   ├── bpmn/
+│   ├── dmn/
+│   ├── worker/
+│   ├── api-examples/
+│   └── report/
+├── lab-3-hospital-triage/
+│   ├── bpmn/
+│   ├── dmn/
+│   ├── worker/
+│   ├── api-examples/
+│   └── report/
+└── evidence/
+    ├── lab-1/
+    ├── lab-2/
+    └── lab-3/
 ```
 
-The app requires the Camunda SaaS environment variables. See `.env.example` and the deployment guide. Do not put your secret into source control.
+---
 
-## Important SaaS note
+## 9. Limitations and Assumptions
 
-The REST Connector runs in Camunda's cloud environment. It cannot reach a local-only `localhost:8081` service. The `creditApiUrl` process variable must point to a publicly reachable HTTPS base URL forwarding to this app. The deployment guide shows a temporary tunnel option.
+- This is an educational workflow assignment. Decision rules and mock services are illustrative and must be documented in the corresponding lab.
+- Actual implementation details, deployment identifiers, execution results, and evidence must be completed from the running environment.
+- Lab 2 must use a simulated payment service or a safe mock integration; no real payment credentials should be committed.
+- Lab 3 must use synthetic patient data. Its educational triage logic must not be represented as a clinical recommendation.
+- A scenario should be marked **Passed** only after the actual process execution confirms the expected outcome.
 
-## Honest delivery boundary
+---
 
-The project files and test fixtures are provided here. No live Camunda cluster is connected from this build environment, so actual deployment, Tasklist completion, Operate incidents, and runtime screenshots must be produced in your own SaaS cluster. Do not submit fabricated screenshots.
+## 10. Final Submission Checklist
+
+- [ ] Separate BPMN implementation for all three labs.
+- [ ] Separate DMN decision model for all three labs.
+- [ ] Java/Spring Boot worker source code and setup instructions.
+- [ ] REST Connector / mock API configuration and examples.
+- [ ] Process-variable dictionaries.
+- [ ] Test matrices with actual outcomes.
+- [ ] Tasklist and Operate evidence captured from the running environment.
+- [ ] Incident investigation and recovery demonstrated where required.
+- [ ] Brief report for each lab.
+- [ ] README updated with final implementation specifics.
+- [ ] No real secrets, payment credentials, or patient data included.
