@@ -1,0 +1,12 @@
+{
+  "applicantId": "APP-1005",
+  "applicantName": "Nisha Das",
+  "age": 30,
+  "monthlyIncome": 80000,
+  "requestedLoanAmount": 800000,
+  "employmentType": "SALARIED",
+  "simulatedCreditScore": 760,
+  "simulateWorkerFailure": true,
+  "simulateCreditApiFailure": false,
+  "creditApiUrl": "https://REPLACE-WITH-YOUR-PUBLIC-HTTPS-BASE-URL"
+}

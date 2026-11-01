@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/"
+             id="Definitions_LoanEligibility"
+             name="Loan Eligibility Decision"
+             namespace="http://example.com/loan-approval/dmn"
+             expressionLanguage="http://www.omg.org/spec/FEEL/20140401" typeLanguage="http://www.omg.org/spec/FEEL/20140401">
+  <decision id="loanEligibilityDecision" name="Loan Eligibility Decision">
+    <decisionTable id="DecisionTable_LoanEligibility" hitPolicy="FIRST">
+      <input id="Input_CreditScore" label="Credit score">
+        <inputExpression id="InputExpression_CreditScore" typeRef="number"><text>creditScore</text></inputExpression>
+      </input>
+      <input id="Input_MonthlyIncome" label="Monthly income (INR)">
+        <inputExpression id="InputExpression_MonthlyIncome" typeRef="number"><text>monthlyIncome</text></inputExpression>
+      </input>
+      <input id="Input_LoanToIncomeRatio" label="Loan amount / monthly income">
+        <inputExpression id="InputExpression_LoanToIncomeRatio" typeRef="number"><text>loanToIncomeRatio</text></inputExpression>
+      </input>
+      <output id="Output_Decision" name="decision" label="Loan decision" typeRef="string" />
+      <rule id="Rule_RejectLowScore">
+        <inputEntry id="Rule_RejectLowScore_Credit"><text>&lt; 550</text></inputEntry>
+        <inputEntry id="Rule_RejectLowScore_Income"><text>-</text></inputEntry>
+        <inputEntry id="Rule_RejectLowScore_Ratio"><text>-</text></inputEntry>
+        <outputEntry id="Rule_RejectLowScore_Output"><text>"REJECTED"</text></outputEntry>
+      </rule>
+      <rule id="Rule_RejectLowIncome">
+        <inputEntry id="Rule_RejectLowIncome_Credit"><text>-</text></inputEntry>
+        <inputEntry id="Rule_RejectLowIncome_Income"><text>&lt; 15000</text></inputEntry>
+        <inputEntry id="Rule_RejectLowIncome_Ratio"><text>-</text></inputEntry>
+        <outputEntry id="Rule_RejectLowIncome_Output"><text>"REJECTED"</text></outputEntry>
+      </rule>
+      <rule id="Rule_RejectHighRatio">
+        <inputEntry id="Rule_RejectHighRatio_Credit"><text>-</text></inputEntry>
+        <inputEntry id="Rule_RejectHighRatio_Income"><text>-</text></inputEntry>
+        <inputEntry id="Rule_RejectHighRatio_Ratio"><text>&gt; 50</text></inputEntry>
+        <outputEntry id="Rule_RejectHighRatio_Output"><text>"REJECTED"</text></outputEntry>
+      </rule>
+      <rule id="Rule_Approve">
+        <inputEntry id="Rule_Approve_Credit"><text>&gt;= 700</text></inputEntry>
+        <inputEntry id="Rule_Approve_Income"><text>&gt;= 30000</text></inputEntry>
+        <inputEntry id="Rule_Approve_Ratio"><text>&lt;= 20</text></inputEntry>
+        <outputEntry id="Rule_Approve_Output"><text>"APPROVED"</text></outputEntry>
+      </rule>
+      <rule id="Rule_ManualReview">
+        <inputEntry id="Rule_ManualReview_Credit"><text>-</text></inputEntry>
+        <inputEntry id="Rule_ManualReview_Income"><text>-</text></inputEntry>
+        <inputEntry id="Rule_ManualReview_Ratio"><text>-</text></inputEntry>
+        <outputEntry id="Rule_ManualReview_Output"><text>"MANUAL_REVIEW"</text></outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_LoanEligibility">
+      <dmndi:DMNShape id="DMNShape_LoanEligibility" dmnElementRef="loanEligibilityDecision">
+        <dc:Bounds x="180" y="120" width="220" height="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>

@@ -1,0 +1,56 @@
+{
+  "info": {
+    "name": "Loan Approval - Synthetic Credit API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Tests the local synthetic credit-assessment API. Use only fake data."
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8081"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health check",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/health"
+      }
+    },
+    {
+      "name": "Successful assessment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"applicantId\": \"APP-1001\",\n  \"monthlyIncome\": 80000,\n  \"requestedLoanAmount\": 800000,\n  \"simulatedCreditScore\": 760,\n  \"simulateCreditApiFailure\": false\n}"
+        },
+        "url": "{{baseUrl}}/api/credit-assessments"
+      }
+    },
+    {
+      "name": "Simulated HTTP 503",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"applicantId\": \"APP-1001\",\n  \"monthlyIncome\": 80000,\n  \"requestedLoanAmount\": 800000,\n  \"simulatedCreditScore\": 760,\n  \"simulateCreditApiFailure\": true\n}"
+        },
+        "url": "{{baseUrl}}/api/credit-assessments"
+      }
+    }
+  ]
+}

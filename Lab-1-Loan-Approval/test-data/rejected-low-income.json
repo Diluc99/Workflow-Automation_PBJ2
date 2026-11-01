@@ -1,0 +1,12 @@
+{
+  "applicantId": "APP-1006",
+  "applicantName": "Low Income Test",
+  "age": 30,
+  "monthlyIncome": 12000,
+  "requestedLoanAmount": 100000,
+  "employmentType": "SALARIED",
+  "simulatedCreditScore": 760,
+  "simulateWorkerFailure": false,
+  "simulateCreditApiFailure": false,
+  "creditApiUrl": "https://REPLACE-WITH-YOUR-PUBLIC-HTTPS-BASE-URL"
+}

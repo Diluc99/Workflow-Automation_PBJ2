@@ -1,0 +1,56 @@
+{
+  "components": [
+    {
+      "type": "text",
+      "id": "Text_ReviewInstructions",
+      "text": "### Manual loan review\n\nReview the applicant and credit-assessment information in the process variables before selecting an outcome. This is an educational simulation, not a real credit decision.",
+      "layout": {
+        "row": "row_0",
+        "columns": null
+      }
+    },
+    {
+      "type": "select",
+      "id": "Field_ReviewOutcome",
+      "key": "reviewOutcome",
+      "label": "Review outcome",
+      "values": [
+        {
+          "label": "Approve application",
+          "value": "APPROVE"
+        },
+        {
+          "label": "Reject application",
+          "value": "REJECT"
+        }
+      ],
+      "validate": {
+        "required": true
+      },
+      "layout": {
+        "row": "row_1",
+        "columns": null
+      }
+    },
+    {
+      "type": "textarea",
+      "id": "Field_ReviewNotes",
+      "key": "reviewNotes",
+      "label": "Review notes",
+      "description": "Optional explanation for the decision.",
+      "layout": {
+        "row": "row_2",
+        "columns": null
+      }
+    }
+  ],
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.8.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.34.0"
+  },
+  "schemaVersion": 18,
+  "id": "loan-review-form",
+  "type": "default"
+}

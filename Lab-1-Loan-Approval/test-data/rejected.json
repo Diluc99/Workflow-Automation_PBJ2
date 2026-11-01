@@ -1,0 +1,12 @@
+{
+  "applicantId": "APP-1002",
+  "applicantName": "Rohan Verma",
+  "age": 30,
+  "monthlyIncome": 25000,
+  "requestedLoanAmount": 400000,
+  "employmentType": "SALARIED",
+  "simulatedCreditScore": 520,
+  "simulateWorkerFailure": false,
+  "simulateCreditApiFailure": false,
+  "creditApiUrl": "https://REPLACE-WITH-YOUR-PUBLIC-HTTPS-BASE-URL"
+}

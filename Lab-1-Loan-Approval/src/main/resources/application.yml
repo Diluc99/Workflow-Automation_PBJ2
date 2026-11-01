@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: loan-approval-camunda8
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  port: ${PORT:8081}
+  error:
+    include-message: always
+
+# Camunda 8 SaaS connection. Set these environment variables before starting the app.
+camunda:
+  client:
+    mode: saas
+    auth:
+      client-id: ${CAMUNDA_CLIENT_ID}
+      client-secret: ${CAMUNDA_CLIENT_SECRET}
+    cloud:
+      cluster-id: ${CAMUNDA_CLUSTER_ID}
+      region: ${CAMUNDA_REGION}
+    worker:
+      defaults:
+        auto-complete: true
+        max-jobs-active: 16
+  worker:
+    enabled: true
+
+logging:
+  level:
+    root: INFO
+    com.example.loanapproval: INFO
+    io.camunda: INFO

@@ -1,0 +1,12 @@
+{
+  "applicantId": "APP-1007",
+  "applicantName": "High Ratio Test",
+  "age": 30,
+  "monthlyIncome": 15000,
+  "requestedLoanAmount": 900000,
+  "employmentType": "SALARIED",
+  "simulatedCreditScore": 760,
+  "simulateWorkerFailure": false,
+  "simulateCreditApiFailure": false,
+  "creditApiUrl": "https://REPLACE-WITH-YOUR-PUBLIC-HTTPS-BASE-URL"
+}

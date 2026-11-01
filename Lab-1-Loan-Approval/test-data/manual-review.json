@@ -1,0 +1,12 @@
+{
+  "applicantId": "APP-1003",
+  "applicantName": "Mira Rao",
+  "age": 30,
+  "monthlyIncome": 45000,
+  "requestedLoanAmount": 700000,
+  "employmentType": "SALARIED",
+  "simulatedCreditScore": 660,
+  "simulateWorkerFailure": false,
+  "simulateCreditApiFailure": false,
+  "creditApiUrl": "https://REPLACE-WITH-YOUR-PUBLIC-HTTPS-BASE-URL"
+}

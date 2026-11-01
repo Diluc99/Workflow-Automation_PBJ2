@@ -1,0 +1,12 @@
+{
+  "applicantId": "APP-1008",
+  "applicantName": "Borderline Score Test",
+  "age": 30,
+  "monthlyIncome": 50000,
+  "requestedLoanAmount": 500000,
+  "employmentType": "SALARIED",
+  "simulatedCreditScore": 680,
+  "simulateWorkerFailure": false,
+  "simulateCreditApiFailure": false,
+  "creditApiUrl": "https://REPLACE-WITH-YOUR-PUBLIC-HTTPS-BASE-URL"
+}
